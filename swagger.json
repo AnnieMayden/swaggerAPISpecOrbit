@@ -1,0 +1,170 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Orbit Api"
+    },
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/actions": {
+            "get": {
+                "summary": "Get multiple action objects",
+                "description": "Gets `Action` objects and returns human readable action information.\nOptional query parameters are available to do filtering, sorting, specifying ranges of data or limiting fields returned. \n",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "to filter actions to those matching search parameter string, searches within action notes field text",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "to limit the number of results returned",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "default": 20
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "to specify offset for a page of results",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32",
+                        "default": 0
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "to specify sorting by action id, action date, date created or time spent in ascending or descending order can combine sorting combinations",
+                        "required": false,
+                        "type": "array",
+                        "collectionFormat": "csv",
+                        "uniqueItems": true,
+                        "minItems": 1,
+                        "maxItems": 4,
+                        "items": {
+                            "type": "string",
+                            "pattern": "^[+,-](date|dateCreated|id|timeSpent)$"
+                        },
+                        "default": [
+                            "-dateCreated"
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfActions",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Action"
+                            }
+                        }
+                    },
+                    "500": {
+                        "$ref": "#/responses/Standard500ErrorResponse"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Action": {
+            "required": [
+                "actionNotes",
+                "timeSpent",
+                "taskId",
+                "date",
+                "createdById",
+                "personId",
+                "completedStatus"
+            ],
+            "properties": {
+                "actionId": {
+                    "description": "auto-increment id of task",
+                    "type": "integer",
+                    "format": "int32",
+                    "readOnly": true,
+                    "example": 456
+                },
+                "date": {
+                    "description": "date action carried out on",
+                    "type": "string",
+                    "format": "date",
+                    "example": "2016-07-28T00:00:00.000Z"
+                },
+                "dateCreated": {
+                    "description": "date action added to the system, created automatically",
+                    "type": "string",
+                    "format": "date-time",
+                    "readOnly": true
+                },
+                "actionNotes": {
+                    "description": "free text description of action taken",
+                    "type": "string"
+                },
+                "timeSpent": {
+                    "description": "time spent carrying out action in minutes",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "taskId": {
+                    "description": "id of the task that the action relates to",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "createdById": {
+                    "description": "id of the person who entered the action in the system",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "personId": {
+                    "description": "id of the person who carried out the action",
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "completedStatus": {
+                    "description": "flag for whether task action relates to is completed or uncompleted after action carried out",
+                    "type": "boolean"
+                }
+            }
+        },
+        "Error": {
+            "required": [
+                "code",
+                "message"
+            ],
+            "properties": {
+                "code": {
+                    "description": "application specifc error code that will not change",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "human readable error message that may change",
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "responses": {
+        "Standard500ErrorResponse": {
+            "description": "An unexpected error occurred",
+            "schema": {
+                "$ref": "#/definitions/Error"
+            }
+        }
+    }
+}
